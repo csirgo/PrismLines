@@ -1,0 +1,36 @@
+<!-- Plugin Configuration File. Read more: https://plugins.jetbrains.com/docs/intellij/plugin-configuration-file.html -->
+<idea-plugin>
+    <!-- Unique identifier of the plugin. It should be FQN. It cannot be changed between the plugin versions. -->
+    <id>com.kame.prismlines</id>
+
+    <!-- Public plugin name should be written in Title Case.
+         Guidelines: https://plugins.jetbrains.com/docs/marketplace/best-practices-for-listing.html#plugin-name -->
+    <name>Prismlines</name>
+
+    <!-- A displayed Vendor name or Organization ID displayed on the Plugins Page. -->
+    <vendor url="https://carmen-sirgo-lopez.vercel.app/">Kame</vendor>
+
+    <!-- Description of the plugin displayed on the Plugin Page and IDE Plugin Manager.
+         Guidelines: https://plugins.jetbrains.com/docs/marketplace/best-practices-for-listing.html#plugin-description -->
+    <description>
+        Allows to colour lines to make code analysis or debugging easier
+    </description>
+
+    <!-- Product and plugin compatibility requirements.
+         Read more: https://plugins.jetbrains.com/docs/intellij/plugin-compatibility.html -->
+    <depends>com.intellij.modules.platform</depends>
+
+    <!-- Extension points defined by the plugin.
+         Read more: https://plugins.jetbrains.com/docs/intellij/plugin-extension-points.html -->
+    <extensions defaultExtensionNs="com.intellij">
+        <editorFactoryListener implementation="com.kame.prismlines.EditorFactoryListener"/>
+    </extensions>
+    <actions>
+        <action id="ColorLineBlue"
+                class="com.kame.prismlines.ColorLineMenuAction"
+                text="Color Line Blue"
+                description="Color current line blue">
+            <add-to-group group-id="EditorGutterPopupMenu" anchor="first"/>
+        </action>
+    </actions>
+</idea-plugin>
