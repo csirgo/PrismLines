@@ -84,6 +84,19 @@ public class ToggleLineColorService {
         }
         addHighlighter(markupModel, startOffset, endOffset);
     }
+    public void clear() {
+        Document document = editor.getDocument();
+        MarkupModel markupModel = editor.getMarkupModel();
+
+        for (RangeHighlighter rh : markupModel.getAllHighlighters()) {
+
+            int rhLine = document.getLineNumber(rh.getStartOffset());
+
+            if (rhLine == line) {
+                markupModel.removeHighlighter(rh);
+            }
+        }
+    }
 
     /**
      *

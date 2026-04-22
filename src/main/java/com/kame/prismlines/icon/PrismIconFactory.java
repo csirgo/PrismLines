@@ -1,6 +1,8 @@
 package com.kame.prismlines.icon;
 
+import com.intellij.ui.JBColor;
 import com.intellij.util.ui.ImageUtil;
+import com.intellij.util.ui.UIUtil;
 
 import javax.swing.*;
 import java.awt.*;
@@ -97,6 +99,49 @@ public final class PrismIconFactory {
 
         g.setColor(color);
         g.fill(path);
+
+        g.dispose();
+
+        return new ImageIcon(image);
+    }
+
+    public static Icon createOutlinePrismIcon() {
+
+        int size = 16;
+
+        BufferedImage image = ImageUtil.createImage(
+                size,
+                size,
+                BufferedImage.TYPE_INT_ARGB
+        );
+
+        Graphics2D g = image.createGraphics();
+
+        g.setRenderingHint(
+                RenderingHints.KEY_ANTIALIASING,
+                RenderingHints.VALUE_ANTIALIAS_ON
+        );
+
+        double cx = size / 2.0;
+        double cy = size / 2.0;
+        double radius = size / 2.2;
+
+        Polygon pentagon = new Polygon();
+
+        for (int i = 0; i < 5; i++) {
+            double angle = Math.toRadians(-90 + i * 72);
+
+            int x = (int) (cx + radius * Math.cos(angle));
+            int y = (int) (cy + radius * Math.sin(angle));
+
+            pentagon.addPoint(x, y);
+        }
+
+        // SOLO OUTLINE
+        g.setColor(new JBColor(new Color(180, 180, 180, 255), new Color(100, 100, 100, 255)));
+        g.setStroke(new BasicStroke(1.5f));
+
+        g.drawPolygon(pentagon);
 
         g.dispose();
 

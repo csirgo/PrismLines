@@ -1,5 +1,7 @@
 package com.kame.prismlines.actions;
 
+import com.intellij.openapi.actionSystem.DefaultActionGroup;
+import com.intellij.openapi.actionSystem.Separator;
 import com.kame.prismlines.color.PrismColor;
 import com.intellij.openapi.actionSystem.ActionGroup;
 import com.intellij.openapi.actionSystem.AnAction;
@@ -8,7 +10,9 @@ import com.kame.prismlines.listener.MouseListener;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.List;
 
 
 public class PrismLinesActionGroup extends ActionGroup {
@@ -23,8 +27,21 @@ public class PrismLinesActionGroup extends ActionGroup {
 
         MouseListener mouseListener = MouseListener.getInstance();
 
-        return Arrays.stream(PrismColor.values())
-                .map(color -> new ColorLineAction(color, mouseListener))
-                .toArray(AnAction[]::new);
+        List<AnAction> actions = new ArrayList<>();
+
+        // Colores
+        actions.addAll(
+                Arrays.stream(PrismColor.values())
+                        .map(color -> new ColorLineAction(color, mouseListener))
+                        .toList()
+        );
+
+        // Separador
+        actions.add(Separator.getInstance());
+
+        // Clear
+        actions.add(new ClearColorAction());
+
+        return actions.toArray(new AnAction[0]);
     }
 }
