@@ -23,14 +23,14 @@
     <!-- Extension points defined by the plugin.
          Read more: https://plugins.jetbrains.com/docs/intellij/plugin-extension-points.html -->
     <extensions defaultExtensionNs="com.intellij">
-        <editorFactoryListener implementation="com.kame.prismlines.EditorFactoryListener"/>
+        <editorFactoryListener implementation="com.kame.prismlines.listener.EditorFactoryListener"/>
     </extensions>
     <actions>
-        <action id="ColorLineBlue"
-                class="com.kame.prismlines.ColorLineMenuAction"
-                text="Color Line Blue"
-                description="Color current line blue">
+        <group id="PrismLinesGroup"
+               class="com.kame.prismlines.actions.PrismLinesActionGroup"
+               text="Prism Lines"
+               popup="true">
             <add-to-group group-id="EditorGutterPopupMenu" anchor="first"/>
-        </action>
+        </group>
     </actions>
 </idea-plugin>

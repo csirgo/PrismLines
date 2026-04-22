@@ -1,4 +1,4 @@
-package com.kame.prismlines;
+package com.kame.prismlines.listener;
 
 import com.intellij.openapi.editor.event.*;
 import com.intellij.openapi.editor.*;
@@ -7,9 +7,13 @@ public class EditorFactoryListener implements com.intellij.openapi.editor.event.
 
     @Override
     public void editorCreated(EditorFactoryEvent event) {
-
         Editor editor = event.getEditor();
+        editor.addEditorMouseListener(MouseListener.getInstance());
+    }
 
-        editor.addEditorMouseListener(new WheelMouseListener());
+    @Override
+    public void editorReleased(EditorFactoryEvent event) {
+        Editor editor = event.getEditor();
+        editor.removeEditorMouseListener(MouseListener.getInstance());
     }
 }

@@ -1,13 +1,9 @@
-package com.kame.prismlines;
+package com.kame.prismlines.utils;
 
-import com.intellij.openapi.actionSystem.AnAction;
 import com.intellij.openapi.actionSystem.AnActionEvent;
-import com.intellij.openapi.actionSystem.CommonDataKeys;
 import com.intellij.openapi.editor.Document;
 import com.intellij.openapi.editor.Editor;
 import com.intellij.openapi.editor.LogicalPosition;
-import com.intellij.openapi.project.Project;
-import org.jetbrains.annotations.NotNull;
 
 import javax.swing.SwingUtilities;
 import java.awt.Component;
@@ -15,26 +11,16 @@ import java.awt.Point;
 import java.awt.event.InputEvent;
 import java.awt.event.MouseEvent;
 
-public class ColorLineMenuAction extends AnAction {
+public class LineUtils {
 
-    @Override
-    public void actionPerformed(@NotNull AnActionEvent e) {
-
-        Editor editor = e.getData(CommonDataKeys.EDITOR);
-        Project project = e.getProject();
-
-        if (editor == null || project == null) return;
+    public static int getLineFromEvent(AnActionEvent e, Editor editor) {
 
         Document document = editor.getDocument();
-
-        int line;
-
         InputEvent inputEvent = e.getInputEvent();
 
         if (inputEvent instanceof MouseEvent mouseEvent) {
 
             Point point = mouseEvent.getPoint();
-
             Component source = mouseEvent.getComponent();
             Component editorComponent = editor.getContentComponent();
 
@@ -43,14 +29,17 @@ public class ColorLineMenuAction extends AnAction {
             }
 
             LogicalPosition pos = editor.xyToLogicalPosition(point);
-            line = pos.line;
+            int line = pos.line;
 
-        } else {
-            int offset = editor.getCaretModel().getOffset();
-            line = document.getLineNumber(offset);
+            // Asegurarse de que la línea esté dentro del rango
+            int lineCount = editor.getDocument().getLineCount();
+            if (line < 0) line = 0;
+            if (line >= lineCount) line = lineCount - 1;
+
+            return line;
         }
 
-            new ToggleLineColorService(editor, line).toggle();
-
+        int offset = editor.getCaretModel().getOffset();
+        return document.getLineNumber(offset);
     }
 }
