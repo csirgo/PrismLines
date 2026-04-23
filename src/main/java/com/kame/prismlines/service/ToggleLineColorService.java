@@ -2,13 +2,11 @@ package com.kame.prismlines.service;
 
 import com.intellij.openapi.editor.Document;
 import com.intellij.openapi.editor.Editor;
-import com.intellij.openapi.editor.markup.HighlighterLayer;
-import com.intellij.openapi.editor.markup.HighlighterTargetArea;
-import com.intellij.openapi.editor.markup.MarkupModel;
 import com.intellij.openapi.editor.markup.RangeHighlighter;
-import com.intellij.openapi.editor.markup.TextAttributes;
+import com.intellij.openapi.fileEditor.FileDocumentManager;
+import com.intellij.openapi.project.Project;
+import com.intellij.openapi.vfs.VirtualFile;
 import com.kame.prismlines.enums.ToggleMode;
-import com.kame.prismlines.ui.gutter.GutterIcon;
 import com.kame.prismlines.enums.PrismColor;
 
 
@@ -64,41 +62,45 @@ public class ToggleLineColorService {
         this.mode = mode;
     }
 
-
     /**
      * Adds, removes or replaces a line color depending on the selected mode.
      */
     public void toggle() {
-        Document document = editor.getDocument();
-        MarkupModel markupModel = editor.getMarkupModel();
-        int startOffset = document.getLineStartOffset(line);
-        int endOffset = document.getLineEndOffset(line);
-
-        RangeHighlighter existing = null;
-
-        for (RangeHighlighter rh : markupModel.getAllHighlighters()) {
-
-            PrismColor existingColor =
-                    rh.getUserData(PrismKeys.PRISM_COLOR_KEY);
-
-            int highlighterLine =
-                    document.getLineNumber(rh.getStartOffset());
-
-            if (existingColor != null && highlighterLine == line) {
-                existing = rh;
-                break;
-            }
+        if (isLineNotValid()) {
+            return;
         }
+
+        Project project = editor.getProject();
+        if (project == null) return;
+
+        String filePath = getFilePath();
+        if (filePath == null) return;
+
+        LineHighlighterService highlighterService =
+                new LineHighlighterService(editor);
+
+        PrismStateService stateService =
+                PrismStateService.getInstance(project);
+
+        RangeHighlighter existing =
+                highlighterService.find(line);
+
 
         // ----------------------
         // WHEEL MODE (toggle puro)
         // ----------------------
         if (mode == ToggleMode.TOGGLE) {
             if (existing != null) {
-                markupModel.removeHighlighter(existing);
-                return;
+                highlighterService.remove(line);
+                stateService.removeLine(filePath, line);
+            } else {
+                highlighterService.add(line, prismColor);
+                stateService.saveLine(
+                        filePath,
+                        line,
+                        prismColor
+                );
             }
-            addHighlighter(markupModel, startOffset, endOffset);
             return;
         }
 
@@ -106,56 +108,84 @@ public class ToggleLineColorService {
         // MENU MODE (replace)
         // ----------------------
         if (existing != null) {
-            PrismColor existingColor = existing.getUserData(PrismKeys.PRISM_COLOR_KEY);
+            PrismColor existingColor =
+                    existing.getUserData(
+                            PrismKeys.PRISM_COLOR_KEY
+                    );
+
             if (existingColor == prismColor) {
-                markupModel.removeHighlighter(existing);
+                highlighterService.remove(line);
+                stateService.removeLine(filePath, line);
                 return;
             }
-            markupModel.removeHighlighter(existing);
+
+            highlighterService.remove(line);
         }
-        addHighlighter(markupModel, startOffset, endOffset);
+
+        highlighterService.add(line, prismColor);
+        stateService.saveLine(
+                filePath,
+                line,
+                prismColor
+        );
     }
 
     /**
      * Removes any existing color from the target line.
      */
     public void clear() {
-        Document document = editor.getDocument();
-        MarkupModel markupModel = editor.getMarkupModel();
-
-        for (RangeHighlighter rh : markupModel.getAllHighlighters()) {
-
-            int rhLine = document.getLineNumber(rh.getStartOffset());
-
-            if (rhLine == line) {
-                markupModel.removeHighlighter(rh);
-            }
+        if (isLineNotValid()) {
+            return;
         }
+
+        Project project = editor.getProject();
+        if (project == null) return;
+
+        String filePath = getFilePath();
+        if (filePath == null) return;
+
+        new LineHighlighterService(editor).remove(line);
+
+        PrismStateService.getInstance(project)
+                .removeLine(filePath, line);
     }
 
     /**
-     * Creates a new highlighter and adds the gutter icon.
-     *
-     * @param markupModel editor markup model
-     * @param startOffset line start offset
-     * @param endOffset line end offset
+     * Restores a previously persisted colored line when an editor is reopened.
+     * <p>
+     * This method only recreates the visual highlighter and gutter icon.
+     * It does not persist anything again.
      */
-    private void addHighlighter(MarkupModel markupModel, int startOffset, int endOffset) {
+    public void restore() {
+        if (isLineNotValid()) {
+            return;
+        }
 
-        TextAttributes attributes = new TextAttributes();
-        attributes.setBackgroundColor(prismColor.getBackgroundColor());
+        new LineHighlighterService(editor)
+                .add(line, prismColor);
+    }
 
-        RangeHighlighter highlighter = markupModel.addRangeHighlighter(
-                startOffset,
-                endOffset,
-                HighlighterLayer.SELECTION - 1,
-                attributes,
-                HighlighterTargetArea.EXACT_RANGE
-        );
+    /**
+     * Retrieves the absolute path of the file associated with the current editor.
+     *
+     * @return the file path, or {@code null} if the editor is not linked
+     * to a physical file.
+     */
+    private String getFilePath() {
+        VirtualFile file = FileDocumentManager.getInstance()
+                .getFile(editor.getDocument());
 
-        highlighter.setGutterIconRenderer(
-                new GutterIcon(editor, line, prismColor)
-        );
-        highlighter.putUserData(PrismKeys.PRISM_COLOR_KEY, prismColor);
+        return file != null ? file.getPath() : null;
+    }
+
+    /**
+     * Checks whether the target line exists in the current document.
+     *
+     * @return {@code true} if the line index is not valid, {@code false} otherwise.
+     */
+    private boolean isLineNotValid() {
+        Document document = editor.getDocument();
+        return line < 0 || line >= document.getLineCount();
+
     }
 }

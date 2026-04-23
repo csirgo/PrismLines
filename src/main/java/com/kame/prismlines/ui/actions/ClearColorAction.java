@@ -65,6 +65,11 @@ public class ClearColorAction extends AnAction {
         boolean enabled = false;
 
         if (editor != null && line != null) {
+            Document document = editor.getDocument();
+
+            if (line < 0 || line >= document.getLineCount()) {
+                return;
+            }
             enabled = hasColor(editor, line);
         }
 
