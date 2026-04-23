@@ -7,10 +7,20 @@ import com.intellij.openapi.editor.markup.HighlighterTargetArea;
 import com.intellij.openapi.editor.markup.MarkupModel;
 import com.intellij.openapi.editor.markup.RangeHighlighter;
 import com.intellij.openapi.editor.markup.TextAttributes;
-import com.kame.prismlines.gutter.GutterIcon;
-import com.kame.prismlines.color.PrismColor;
+import com.kame.prismlines.enums.ToggleMode;
+import com.kame.prismlines.ui.gutter.GutterIcon;
+import com.kame.prismlines.enums.PrismColor;
 
 
+/**
+ * Service responsible for managing line colors in the editor.
+ *
+ * <p>It supports two behaviors:
+ * <ul>
+ *     <li>{@link ToggleMode#TOGGLE}: adds or removes a color from a line.</li>
+ *     <li>{@link ToggleMode#REPLACE}: replaces an existing color with a new one.</li>
+ * </ul>
+ */
 public class ToggleLineColorService {
 
     private final Editor editor;
@@ -18,14 +28,35 @@ public class ToggleLineColorService {
     private final PrismColor prismColor;
     private final ToggleMode mode;
 
+    /**
+     * Creates a toggle action using the default Aqua color.
+     *
+     * @param editor target editor
+     * @param line target line number
+     */
     public ToggleLineColorService(Editor editor, int line) {
         this(editor, line, PrismColor.AQUA, ToggleMode.TOGGLE);
     }
 
+    /**
+     * Creates a replacement action using the provided color.
+     *
+     * @param editor target editor
+     * @param line target line number
+     * @param prismColor color to apply
+     */
     public ToggleLineColorService(Editor editor, int line, PrismColor prismColor) {
         this(editor, line, prismColor, ToggleMode.REPLACE);
     }
 
+    /**
+     * Creates a color action with full configuration.
+     *
+     * @param editor target editor
+     * @param line target line number
+     * @param prismColor color to apply
+     * @param mode toggle behavior
+     */
     public ToggleLineColorService(Editor editor, int line, PrismColor prismColor, ToggleMode mode) {
         this.editor = editor;
         this.line = line;
@@ -33,6 +64,10 @@ public class ToggleLineColorService {
         this.mode = mode;
     }
 
+
+    /**
+     * Adds, removes or replaces a line color depending on the selected mode.
+     */
     public void toggle() {
         Document document = editor.getDocument();
         MarkupModel markupModel = editor.getMarkupModel();
@@ -46,14 +81,10 @@ public class ToggleLineColorService {
             PrismColor existingColor =
                     rh.getUserData(PrismKeys.PRISM_COLOR_KEY);
 
-            if (existingColor == null) {
-                continue;
-            }
-
             int highlighterLine =
                     document.getLineNumber(rh.getStartOffset());
 
-            if (highlighterLine == line) {
+            if (existingColor != null && highlighterLine == line) {
                 existing = rh;
                 break;
             }
@@ -84,6 +115,10 @@ public class ToggleLineColorService {
         }
         addHighlighter(markupModel, startOffset, endOffset);
     }
+
+    /**
+     * Removes any existing color from the target line.
+     */
     public void clear() {
         Document document = editor.getDocument();
         MarkupModel markupModel = editor.getMarkupModel();
@@ -99,10 +134,11 @@ public class ToggleLineColorService {
     }
 
     /**
+     * Creates a new highlighter and adds the gutter icon.
      *
-     * @param markupModel
-     * @param startOffset
-     * @param endOffset
+     * @param markupModel editor markup model
+     * @param startOffset line start offset
+     * @param endOffset line end offset
      */
     private void addHighlighter(MarkupModel markupModel, int startOffset, int endOffset) {
 

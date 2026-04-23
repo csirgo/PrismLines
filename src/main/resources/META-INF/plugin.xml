@@ -23,11 +23,11 @@
     <!-- Extension points defined by the plugin.
          Read more: https://plugins.jetbrains.com/docs/intellij/plugin-extension-points.html -->
     <extensions defaultExtensionNs="com.intellij">
-        <editorFactoryListener implementation="com.kame.prismlines.listener.EditorFactoryListener"/>
+        <editorFactoryListener implementation="com.kame.prismlines.listener.PrismLinesListener"/>
     </extensions>
     <actions>
         <group id="PrismLinesGroup"
-               class="com.kame.prismlines.actions.PrismLinesActionGroup"
+               class="com.kame.prismlines.ui.actions.PrismLinesActionGroup"
                text="Prism Lines"
                popup="true">
             <add-to-group group-id="EditorGutterPopupMenu" anchor="first"/>
