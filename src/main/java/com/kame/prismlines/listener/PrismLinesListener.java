@@ -54,22 +54,4 @@ public class PrismLinesListener implements EditorFactoryListener {
 
         editor.addEditorMouseListener(MouseListener.getInstance());
     }
-
-    /**
-     * Called when an editor instance is about to be disposed.
-     * <p>Unregisters the PrismLines {@link MouseListener} to prevent memory leaks
-     * and avoid handling events from a non-existent editor.</p>
-     *
-     * @param event event containing the editor being released
-     */
-    @Override
-    public void editorReleased(EditorFactoryEvent event) {
-        Editor editor = event.getEditor();
-
-        if (!editor.isDisposed()) {
-            editor.removeEditorMouseListener(
-                    MouseListener.getInstance()
-            );
-        }
-    }
 }
