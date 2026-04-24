@@ -65,6 +65,11 @@ public class PrismLinesListener implements EditorFactoryListener {
     @Override
     public void editorReleased(EditorFactoryEvent event) {
         Editor editor = event.getEditor();
-        editor.removeEditorMouseListener(MouseListener.getInstance());
+
+        if (!editor.isDisposed()) {
+            editor.removeEditorMouseListener(
+                    MouseListener.getInstance()
+            );
+        }
     }
 }
