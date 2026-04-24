@@ -1,19 +1,27 @@
 <!-- Plugin Configuration File. Read more: https://plugins.jetbrains.com/docs/intellij/plugin-configuration-file.html -->
 <idea-plugin>
-    <!-- Unique identifier of the plugin. It should be FQN. It cannot be changed between the plugin versions. -->
     <id>com.kame.prismlines</id>
-
-    <!-- Public plugin name should be written in Title Case.
-         Guidelines: https://plugins.jetbrains.com/docs/marketplace/best-practices-for-listing.html#plugin-name -->
-    <name>Prismlines</name>
-
-    <!-- A displayed Vendor name or Organization ID displayed on the Plugins Page. -->
+    <name>Prism Lines</name>
     <vendor url="https://carmen-sirgo-lopez.vercel.app/">Kame</vendor>
-
-    <!-- Description of the plugin displayed on the Plugin Page and IDE Plugin Manager.
-         Guidelines: https://plugins.jetbrains.com/docs/marketplace/best-practices-for-listing.html#plugin-description -->
     <description>
-        Allows to colour lines to make code analysis or debugging easier
+        <![CDATA[
+    <p>
+        Highlight lines with different colors to make code analysis, debugging,
+        and code reviews easier.
+    </p>
+
+    <ul>
+        <li>Highlight any line directly from the gutter</li>
+        <li>Choose between 7 different colors</li>
+        <li>Quick toggle using middle mouse click</li>
+        <li>Context menu support for changing or clearing colors</li>
+        <li>Persistent highlights across IDE sessions</li>
+    </ul>
+
+    <p>
+        PrismLines helps you visually track important lines without modifying your code.
+    </p>
+    ]]>
     </description>
 
     <!-- Product and plugin compatibility requirements.
