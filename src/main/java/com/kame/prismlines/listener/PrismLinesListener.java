@@ -1,10 +1,12 @@
 package com.kame.prismlines.listener;
 
+import com.github.weisj.jsvg.L;
 import com.intellij.openapi.editor.Editor;
 import com.intellij.openapi.editor.event.EditorFactoryEvent;
 import com.intellij.openapi.editor.event.EditorFactoryListener;
 import com.intellij.openapi.fileEditor.FileDocumentManager;
 import com.intellij.openapi.project.Project;
+import com.intellij.openapi.util.Key;
 import com.intellij.openapi.vfs.VirtualFile;
 import com.kame.prismlines.enums.PrismColor;
 import com.kame.prismlines.persistence.PrismLineState;
@@ -20,6 +22,8 @@ import com.kame.prismlines.service.ToggleLineColorService;
  * unregistering listeners when the editor is disposed.</p>
  */
 public class PrismLinesListener implements EditorFactoryListener {
+
+    public static final Key<Boolean> LISTENER_ADDED = Key.create("PRISM_LISTENER");
 
     /**
      * Called when a new editor instance is created by the IDE.
@@ -53,5 +57,6 @@ public class PrismLinesListener implements EditorFactoryListener {
         }
 
         editor.addEditorMouseListener(MouseListener.getInstance());
+        editor.putUserData(LISTENER_ADDED, true);
     }
 }

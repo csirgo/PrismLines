@@ -32,6 +32,7 @@
          Read more: https://plugins.jetbrains.com/docs/intellij/plugin-extension-points.html -->
     <extensions defaultExtensionNs="com.intellij">
         <editorFactoryListener implementation="com.kame.prismlines.listener.PrismLinesListener"/>
+        <postStartupActivity implementation="com.kame.prismlines.startup.PrismLinesProjectActivity"/>
     </extensions>
     <actions>
         <group id="PrismLinesGroup"
